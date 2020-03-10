@@ -44,6 +44,13 @@ typedef struct
 
 typedef struct
 {
+  char ssid[0];
+  uint8 rates[1];
+  uint8 extra_rates[1];
+} wifi_mgmt_probe_req_t;
+
+typedef struct
+{
     unsigned protocol:2;
     unsigned type:2;
     unsigned subtype:4;

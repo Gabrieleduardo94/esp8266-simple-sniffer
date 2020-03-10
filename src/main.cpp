@@ -80,21 +80,32 @@ void wifi_sniffer_packet_handler(uint8_t *buff, uint16_t len)
     frame_ctrl->strict);
 
   // Print ESSID if beacon
-  if (frame_ctrl->type == WIFI_PKT_MGMT && frame_ctrl->subtype == BEACON)
+  // if (frame_ctrl->type == WIFI_PKT_MGMT && frame_ctrl->subtype == BEACON)
+  // {
+  //   const wifi_mgmt_beacon_t *beacon_frame = (wifi_mgmt_beacon_t*) ipkt->payload;
+  //   char ssid[32] = {0};
+
+  //   if (beacon_frame->tag_length >= 32)
+  //   {
+  //     strncpy(ssid, beacon_frame->ssid, 31);
+  //   }
+  //   else
+  //   {
+  //     strncpy(ssid, beacon_frame->ssid, beacon_frame->tag_length);
+  //   }
+
+  //   Serial.printf("%s", ssid);
+  // }
+
+    if (frame_ctrl->type == WIFI_PKT_MGMT && frame_ctrl->subtype == PROBE_REQ)
   {
-    const wifi_mgmt_beacon_t *beacon_frame = (wifi_mgmt_beacon_t*) ipkt->payload;
+    const wifi_mgmt_probe_req_t *probe_req_frame = (wifi_mgmt_probe_req_t*) ipkt->payload;
     char ssid[32] = {0};
 
-    if (beacon_frame->tag_length >= 32)
-    {
-      strncpy(ssid, beacon_frame->ssid, 31);
-    }
-    else
-    {
-      strncpy(ssid, beacon_frame->ssid, beacon_frame->tag_length);
-    }
+    strncpy(ssid, probe_req_frame->ssid);
 
     Serial.printf("%s", ssid);
+    Serial.println(" rates: %d", probe_req_frame->rates)
   }
 }
 
