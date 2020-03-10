@@ -101,11 +101,13 @@ void wifi_sniffer_packet_handler(uint8_t *buff, uint16_t len)
   {
     const wifi_mgmt_probe_req_t *probe_req_frame = (wifi_mgmt_probe_req_t*) ipkt->payload;
     char ssid[32] = {0};
+    int rate = atoi((const char*)probe_req_frame->rates);
 
-    strncpy(ssid, probe_req_frame->ssid);
+    strncpy(ssid, probe_req_frame->ssid, (uint8_t)8);
 
     Serial.printf("%s", ssid);
-    Serial.println(" rates: %d", probe_req_frame->rates)
+    Serial.printf(" rates: %d", rate);
+    Serial.printf("Sender: %s \n", addr2);
   }
 }
 
