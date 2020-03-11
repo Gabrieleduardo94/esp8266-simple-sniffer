@@ -59,7 +59,31 @@ void wifi_sniffer_packet_handler(uint8_t *buff, uint16_t len)
   mac2str(hdr->addr2, addr2);
   mac2str(hdr->addr3, addr3);
 
-  // Output info to serial
+  
+
+  //Print ESSID if beacon
+  //if (frame_ctrl->type == WIFI_PKT_MGMT && frame_ctrl->subtype == BEACON)
+  //if (frame_ctrl->type == WIFI_PKT_MGMT && frame_ctrl->subtype == PROBE_REQ)
+  // {
+  //   const wifi_mgmt_beacon_t *beacon_frame = (wifi_mgmt_beacon_t*) ipkt->payload;
+  //   char ssid[32] = {0};
+
+  //   if (beacon_frame->tag_length >= 32)
+  //   {
+  //     strncpy(ssid, beacon_frame->ssid, 31);
+  //   }
+  //   else
+  //   {
+  //     strncpy(ssid, beacon_frame->ssid, beacon_frame->tag_length);
+  //   }
+
+  //   Serial.printf("%s", ssid);
+  // }
+
+    if (frame_ctrl->type == WIFI_PKT_MGMT && frame_ctrl->subtype == PROBE_REQ)
+  {
+
+// Output info to serial
   Serial.printf("\n%s | %s | %s | %u | %02d | %u | %u(%-2u) | %-28s | %u | %u | %u | %u | %u | %u | %u | %u | ",
     addr1,
     addr2,
@@ -79,35 +103,23 @@ void wifi_sniffer_packet_handler(uint8_t *buff, uint16_t len)
     frame_ctrl->wep,
     frame_ctrl->strict);
 
-  // Print ESSID if beacon
-  // if (frame_ctrl->type == WIFI_PKT_MGMT && frame_ctrl->subtype == BEACON)
-  // {
-  //   const wifi_mgmt_beacon_t *beacon_frame = (wifi_mgmt_beacon_t*) ipkt->payload;
-  //   char ssid[32] = {0};
-
-  //   if (beacon_frame->tag_length >= 32)
-  //   {
-  //     strncpy(ssid, beacon_frame->ssid, 31);
-  //   }
-  //   else
-  //   {
-  //     strncpy(ssid, beacon_frame->ssid, beacon_frame->tag_length);
-  //   }
-
-  //   Serial.printf("%s", ssid);
-  // }
-
-    if (frame_ctrl->type == WIFI_PKT_MGMT && frame_ctrl->subtype == PROBE_REQ)
-  {
     const wifi_mgmt_probe_req_t *probe_req_frame = (wifi_mgmt_probe_req_t*) ipkt->payload;
     char ssid[32] = {0};
-    int rate = atoi((const char*)probe_req_frame->rates);
+    //int rate = atoi((const char*)probe_req_frame->rates->supported_rates);
 
-    strncpy(ssid, probe_req_frame->ssid, (uint8_t)8);
+    if (probe_req_frame->ssid.hdr.length >= 32)
+    {
+      strncpy(ssid, probe_req_frame->ssid.ssid, 31);
+    }
+    else
+    {
+      strncpy(ssid, probe_req_frame->ssid.ssid, probe_req_frame->ssid.hdr.length);
+    }
 
     Serial.printf("%s", ssid);
-    Serial.printf(" rates: %d", rate);
-    Serial.printf("Sender: %s \n", addr2);
+  
+    //Serial.print(probe_req_frame->rates);
+    Serial.printf(" Sender: %s \n", addr2);
   }
 }
 

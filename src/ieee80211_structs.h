@@ -32,6 +32,28 @@ typedef enum
     ACTION_NACK,
 } wifi_mgmt_subtypes_t;
 
+typedef struct {
+    unsigned id:8;
+    unsigned length:8;
+} element_hdr;
+
+typedef struct {
+    element_hdr hdr;
+    char ssid[32];
+} wlan_ssid_t;
+
+#define MAX_SUPPORTED_RATES_LEN 8
+
+typedef struct {
+    element_hdr hdr;
+    uint8_t     supported_rates[MAX_SUPPORTED_RATES_LEN]; // Mbps
+} wlan_supported_rates_t;
+
+typedef struct {
+    element_hdr hdr;
+    uint8_t     extended_sup_rates[0]; // length: [1-255]
+} wlan_extended_sup_rates_t;
+
 typedef struct
 {
   unsigned interval:16;
@@ -44,9 +66,9 @@ typedef struct
 
 typedef struct
 {
-  char ssid[0];
-  uint8 rates[1];
-  uint8 extra_rates[1];
+  wlan_ssid_t ssid;
+  wlan_supported_rates_t rates;
+  wlan_extended_sup_rates_t ex_rates;
 } wifi_mgmt_probe_req_t;
 
 typedef struct
